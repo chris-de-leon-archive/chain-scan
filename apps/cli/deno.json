@@ -1,0 +1,12 @@
+{
+  "name": "@chain-scan/cli",
+  "exports": "./src/mod.ts",
+  "tasks": {
+    "build": "deno compile --allow-all --output ./dist/bin ./src/mod.ts",
+    "cli": "deno run --allow-all ./src/mod.ts"
+  },
+  "imports": {
+    "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.7",
+    "zod": "npm:zod@3.24.2"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@chain-scan/chains-solana",
+  "exports": "./mod.ts",
+  "imports": {
+    "@solana/web3.js": "npm:@solana/web3.js@1.98.0"
+  }
+}

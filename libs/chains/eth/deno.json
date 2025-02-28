@@ -1,0 +1,7 @@
+{
+  "name": "@chain-scan/chains-eth",
+  "exports": "./mod.ts",
+  "imports": {
+    "ethers": "npm:ethers@6.13.5"
+  }
+}
