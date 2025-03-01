@@ -1,7 +1,0 @@
-{
-  "name": "@chain-scan/chains-aptos",
-  "exports": "./mod.ts",
-  "imports": {
-    "@aptos-labs/ts-sdk": "npm:@aptos-labs/ts-sdk@1.35.0"
-  }
-}

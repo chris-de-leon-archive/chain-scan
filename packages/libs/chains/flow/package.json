@@ -1,0 +1,14 @@
+{
+  "name": "@chain-scan/chains-flow",
+  "exports": "./index.ts",
+  "scripts": {
+    "gen": "buf generate"
+  },
+  "dependencies": {
+    "@bufbuild/buf": "1.50.0",
+    "@bufbuild/protobuf": "2.2.3",
+    "@bufbuild/protoc-gen-es": "2.2.3",
+    "@connectrpc/connect": "2.0.1",
+    "@connectrpc/connect-node": "2.0.1"
+  }
+}

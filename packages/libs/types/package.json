@@ -1,0 +1,4 @@
+{
+  "name": "@chain-scan/types",
+  "exports": "./index.ts"
+}

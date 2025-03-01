@@ -1,0 +1,8 @@
+{
+  "name": "@chain-scan/chains-aptos",
+  "exports": "./index.ts",
+  "dependencies": {
+    "@aptos-labs/ts-sdk": "1.35.0",
+    "@chain-scan/types": "workspace:*"
+  }
+}

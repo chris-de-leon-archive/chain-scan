@@ -26,8 +26,8 @@
             pkgs.bashInteractive
             pkgs.lastpass-cli
             pkgs.nodejs
-            pkgs.deno
             pkgs.scli
+            pkgs.bun
           ];
         };
       }

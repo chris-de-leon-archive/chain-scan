@@ -1,0 +1,23 @@
+{
+  "name": "@chain-scan/cli",
+  "scripts": {
+    "build": "bun build ./bin/run.js --compile --outfile=./dist/bin",
+    "dev": "NODE_ENV=development ./bin/dev.js",
+    "cli": "NODE_ENV=production ./dist/bin",
+    "oclif": "oclif"
+  },
+  "dependencies": {
+    "@chain-scan/chains-aptos": "workspace:",
+    "@chain-scan/chains-eth": "workspace:",
+    "@chain-scan/chains-flow": "workspace:",
+    "@chain-scan/chains-solana": "workspace:",
+    "@chain-scan/chains-starknet": "workspace:",
+    "@chain-scan/chains-tron": "workspace:",
+    "@oclif/core": "4.2.8",
+    "oclif": "4.17.32",
+    "zod": "3.24.2"
+  },
+  "bin": {
+    "cli": "./dist/bin"
+  }
+}

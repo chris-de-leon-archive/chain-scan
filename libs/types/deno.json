@@ -1,4 +1,0 @@
-{
-  "name": "@chain-scan/types",
-  "exports": "./mod.ts"
-}

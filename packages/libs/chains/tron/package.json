@@ -1,0 +1,8 @@
+{
+  "name": "@chain-scan/chains-tron",
+  "exports": "./index.ts",
+  "dependencies": {
+    "tronweb": "6.0.1",
+    "@chain-scan/types": "workspace:*"
+  }
+}

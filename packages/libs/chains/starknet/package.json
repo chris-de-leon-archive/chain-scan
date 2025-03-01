@@ -1,0 +1,8 @@
+{
+  "name": "@chain-scan/chains-starknet",
+  "exports": "./index.ts",
+  "dependencies": {
+    "starknet": "6.23.1",
+    "@chain-scan/types": "workspace:*"
+  }
+}

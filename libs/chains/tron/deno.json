@@ -1,7 +1,0 @@
-{
-  "name": "@chain-scan/chains-tron",
-  "exports": "./mod.ts",
-  "imports": {
-    "tronweb": "npm:tronweb@6.0.1"
-  }
-}
