@@ -12,13 +12,13 @@
   },
   "workspace": [
     "./apps/cli",
+    "./apps/web",
     "./libs/chains/starknet",
     "./libs/chains/solana",
     "./libs/chains/aptos",
     "./libs/chains/tron",
     "./libs/chains/flow",
     "./libs/chains/eth",
-    "./libs/utils",
     "./libs/types"
   ]
 }
