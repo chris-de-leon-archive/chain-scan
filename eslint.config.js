@@ -6,6 +6,6 @@ export default tseslint.config(
   tseslint.configs.strict,
   tseslint.configs.stylistic,
   {
-    ignores: ["**/*_pb.ts"],
+    ignores: ["./packages/libs/chains/aptos/client**/*", "**/*_pb.ts"],
   },
 )

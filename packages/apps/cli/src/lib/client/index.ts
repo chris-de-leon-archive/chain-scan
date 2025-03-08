@@ -1,33 +1,40 @@
-import { Starknet } from "@chain-scan/chains-starknet"
-import { AssertUnreachable } from "../utils/index.ts"
-import { Solana } from "@chain-scan/chains-solana"
-import { Aptos } from "@chain-scan/chains-aptos"
-import { Flow } from "@chain-scan/chains-flow"
-import { Tron } from "@chain-scan/chains-tron"
-import { Eth } from "@chain-scan/chains-eth"
+import { AssertUnreachable } from "../utils"
 import { ChainType } from "../enums"
 
-export type ChainClientOptions = {
+export interface ChainClientOptions {
   url: string
 }
 
-export class ChainClient {
-  static build(chain: ChainType, opts: ChainClientOptions) {
-    switch (chain) {
-      case ChainType.STARKNET:
-        return new Starknet(opts.url)
-      case ChainType.SOLANA:
-        return new Solana(opts.url)
-      case ChainType.APTOS:
-        return new Aptos(opts.url)
-      case ChainType.TRON:
-        return new Tron(opts.url)
-      case ChainType.FLOW:
-        return new Flow(opts.url)
-      case ChainType.ETH:
-        return new Eth(opts.url)
-      default:
-        return AssertUnreachable(chain)
-    }
+export const buildChainClient = async (
+  chain: ChainType,
+  opts: ChainClientOptions,
+) => {
+  switch (chain) {
+    case ChainType.STARKNET:
+      return await import("@chain-scan/chains-starknet").then(
+        ({ Starknet }) => new Starknet(opts.url),
+      )
+    case ChainType.SOLANA:
+      return await import("@chain-scan/chains-solana").then(
+        ({ Solana }) => new Solana(opts.url),
+      )
+    case ChainType.APTOS:
+      return await import("@chain-scan/chains-aptos").then(
+        ({ Aptos }) => new Aptos(opts.url),
+      )
+    case ChainType.TRON:
+      return await import("@chain-scan/chains-tron").then(
+        ({ Tron }) => new Tron(opts.url),
+      )
+    case ChainType.FLOW:
+      return await import("@chain-scan/chains-flow").then(
+        ({ Flow }) => new Flow(opts.url),
+      )
+    case ChainType.ETH:
+      return await import("@chain-scan/chains-eth").then(
+        ({ Eth }) => new Eth(opts.url),
+      )
+    default:
+      return AssertUnreachable(chain)
   }
 }

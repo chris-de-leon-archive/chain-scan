@@ -1,8 +1,15 @@
 {
   "name": "@chain-scan/chains-aptos",
   "exports": "./index.ts",
+  "scripts": {
+    "gen": "rm -rf ./client && mkdir -p ./client && openapi-typescript ./spec/document.yaml -o ./client/index.ts"
+  },
   "dependencies": {
+    "@chain-scan/types": "workspace:*",
+    "openapi-fetch": "0.13.4"
+  },
+  "devDependencies": {
     "@aptos-labs/ts-sdk": "1.35.0",
-    "@chain-scan/types": "workspace:*"
+    "openapi-typescript": "7.6.1"
   }
 }

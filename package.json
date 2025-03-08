@@ -2,6 +2,7 @@
   "name": "chain-scan",
   "type": "module",
   "scripts": {
+    "postinstall": "bun run --filter='@chain-scan/chains-flow' --filter='@chain-scan/chains-aptos' gen",
     "lint": "eslint --debug ./packages/libs",
     "fmt": "prettier ./packages --write"
   },

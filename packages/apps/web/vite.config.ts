@@ -6,7 +6,7 @@ export default defineConfig({
 	plugins: [sveltekit(), tailwindcss()],
 	server: {
 		fs: {
-			allow: ['../../node_modules', './node_modules']
-		}
-	}
+			allow: ['../../node_modules', './node_modules'],
+		},
+	},
 })

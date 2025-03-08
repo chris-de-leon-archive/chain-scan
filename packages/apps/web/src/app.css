@@ -1,1 +1,32 @@
 @import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton/optional/presets';
+@import '@skeletonlabs/skeleton/themes/terminus';
+
+@source '../../../../node_modules/@skeletonlabs/skeleton-svelte/dist';
+
+@layer base {
+	.section {
+		@apply py-8;
+	}
+}
+
+@utility container {
+	padding-inline: 25px;
+	margin-inline: auto;
+
+	@variant sm {
+		padding-inline: 5px;
+	}
+
+	@variant lg {
+		padding-inline: 10px;
+	}
+
+	@variant xl {
+		padding-inline: 15px;
+	}
+}

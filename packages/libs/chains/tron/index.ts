@@ -20,9 +20,23 @@ export class Tron implements Chain<Block, Transaction> {
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).map(async (_, i) => {
-        return await this.client.trx.getTransactionsFromBlock(
-          latestBlock.block_header.raw_data.number - i,
-        )
+        try {
+          return await this.client.trx.getTransactionsFromBlock(
+            latestBlock.block_header.raw_data.number - i,
+          )
+        } catch (err) {
+          if (err instanceof Error) {
+            // NOTE: if a block does not have transactions, then apparently the
+            // Tron SDK throws an error instead of returning an empty array :(
+            if (err.message.includes("Transaction not found in block")) {
+              return []
+            } else {
+              throw err
+            }
+          } else {
+            throw err
+          }
+        }
       }),
     )
 

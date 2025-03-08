@@ -1,5 +1,5 @@
+import { buildChainClient } from "../../lib/client"
 import { Args, Command, Flags } from "@oclif/core"
-import { ChainClient } from "../../lib/client"
 import { formatJSON } from "../../lib/utils"
 import { ChainType } from "../../lib/enums"
 import { z } from "zod"
@@ -20,9 +20,10 @@ export default class TransactionsGet extends Command {
     const { args, flags } = await this.parse(TransactionsGet)
 
     const chainType = z.nativeEnum(ChainType).parse(flags.chain)
-    const chainUrl = { url: flags.url.href }
+    const chainOpts = { url: flags.url.href }
 
-    await ChainClient.build(chainType, chainUrl)
+    const client = await buildChainClient(chainType, chainOpts)
+    await client
       .getTransactionByID(args.id)
       .then((res) => this.log(formatJSON(res)))
   }

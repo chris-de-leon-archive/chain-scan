@@ -25,6 +25,7 @@
           packages = [
             pkgs.bashInteractive
             pkgs.lastpass-cli
+            pkgs.sqlite
             pkgs.nodejs
             pkgs.scli
             pkgs.bun

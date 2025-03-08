@@ -1,4 +1,4 @@
-import { ChainClient } from "../../lib/client"
+import { buildChainClient } from "../../lib/client"
 import { Command, Flags } from "@oclif/core"
 import { formatJSON } from "../../lib/utils"
 import { ChainType } from "../../lib/enums"
@@ -14,8 +14,9 @@ export default class BlocksList extends Command {
   }
 
   static override examples = [
-    '<%= config.bin %> <%= command.id %> --chain="eth" --url="https://rpc.api.moononbeam.network"',
+    '<%= config.bin %> <%= command.id %> --chain="eth" --url="https://moonbeam.public.blastapi.io"',
     '<%= config.bin %> <%= command.id %> --chain="solana" --url="https://api.devnet.solana.com"',
+    '<%= config.bin %> <%= command.id %> --chain="aptos" --url="https://fullnode.devnet.aptoslabs.com/v1"',
     '<%= config.bin %> <%= command.id %> --chain="tron" --url="https://api.tronongrid.io"',
     '<%= config.bin %> <%= command.id %> --chain="starknet" --url="https://starknetet-mainnet.public.blastapi.io/rpc/v0_7"',
     '<%= config.bin %> <%= command.id %> --chain="flow" --url="https://testnet.onflow.org"',
@@ -25,9 +26,10 @@ export default class BlocksList extends Command {
     const { flags } = await this.parse(BlocksList)
 
     const chainType = z.nativeEnum(ChainType).parse(flags.chain)
-    const chainUrl = { url: flags.url.href }
+    const chainOpts = { url: flags.url.href }
 
-    await ChainClient.build(chainType, chainUrl)
+    const client = await buildChainClient(chainType, chainOpts)
+    await client
       .getLatestBlocks(flags.limit)
       .then((res) => this.log(formatJSON(res)))
   }

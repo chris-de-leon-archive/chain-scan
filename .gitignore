@@ -1,2 +1,5 @@
+packages/libs/chains/aptos/client
+packages/libs/chains/flow/client
+
 node_modules
 dist

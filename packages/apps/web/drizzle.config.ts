@@ -7,9 +7,9 @@ if (url == null) {
 }
 
 export default defineConfig({
-	schema: './src/lib/server/db/schema.ts',
+	schema: './src/lib/server/providers/db/schema/**/*.schema.ts',
 	dbCredentials: { url },
 	verbose: true,
 	strict: true,
-	dialect: 'sqlite'
+	dialect: 'sqlite',
 })
