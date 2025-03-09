@@ -42,7 +42,7 @@ export const load: PageServerLoad = async (event) => {
 				flow: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
 				eth: Promise.resolve(undefined),
-				starknet: api.chains.starknet.transactions.get.handler(auth.session, {
+				starknet: api.chains.starknet.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),
@@ -55,7 +55,7 @@ export const load: PageServerLoad = async (event) => {
 				flow: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
 				eth: Promise.resolve(undefined),
-				solana: api.chains.solana.transactions.get.handler(auth.session, {
+				solana: api.chains.solana.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),
@@ -68,7 +68,7 @@ export const load: PageServerLoad = async (event) => {
 				flow: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
 				eth: Promise.resolve(undefined),
-				aptos: api.chains.aptos.transactions.get.handler(auth.session, {
+				aptos: api.chains.aptos.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),
@@ -81,7 +81,7 @@ export const load: PageServerLoad = async (event) => {
 				aptos: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
 				eth: Promise.resolve(undefined),
-				flow: api.chains.flow.transactions.get.handler(auth.session, {
+				flow: api.chains.flow.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),
@@ -94,7 +94,7 @@ export const load: PageServerLoad = async (event) => {
 				flow: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
 				eth: Promise.resolve(undefined),
-				solana: api.chains.tron.transactions.get.handler(auth.session, {
+				solana: api.chains.tron.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),
@@ -107,7 +107,7 @@ export const load: PageServerLoad = async (event) => {
 				aptos: Promise.resolve(undefined),
 				flow: Promise.resolve(undefined),
 				tron: Promise.resolve(undefined),
-				eth: api.chains.eth.transactions.get.handler(auth.session, {
+				eth: api.chains.eth.blocks.get.handler(auth.session, {
 					url: ds.url,
 					id: event.params.id,
 				}),

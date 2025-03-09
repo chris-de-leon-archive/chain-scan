@@ -1,90 +1,103 @@
 <script lang="ts">
-	import { SearchIcon } from 'lucide-svelte'
+	import { Popover, Combobox } from '@skeletonlabs/skeleton-svelte'
+	import { SlidersHorizontalIcon } from 'lucide-svelte'
+	import type { PageProps } from './$types'
+	import { ChainType } from '$lib/enums'
+	import { page } from '$app/state'
+	const pageProps: PageProps = $props()
 
-	const tableData = [
-		{ position: '0', name: 'Iron', symbol: 'Fe', atomic_no: '26' },
-		{ position: '1', name: 'Rhodium', symbol: 'Rh', atomic_no: '45' },
-		{ position: '2', name: 'Iodine', symbol: 'I', atomic_no: '53' },
-		{ position: '3', name: 'Radon', symbol: 'Rn', atomic_no: '86' },
-		{ position: '4', name: 'Technetium', symbol: 'Tc', atomic_no: '43' },
-		{ position: '5', name: 'Hydrogen', symbol: 'H', atomic_no: '1' },
-		{ position: '6', name: 'Oxygen', symbol: 'O', atomic_no: '8' },
-		{ position: '7', name: 'Carbon', symbol: 'C', atomic_no: '6' },
-		{ position: '8', name: 'Neon', symbol: 'Ne', atomic_no: '10' },
-		{ position: '9', name: 'Gold', symbol: 'Au', atomic_no: '79' },
-		{ position: '10', name: 'Silver', symbol: 'Ag', atomic_no: '47' },
-		{ position: '11', name: 'Uranium', symbol: 'U', atomic_no: '92' },
-		{ position: '12', name: 'Lithium', symbol: 'Li', atomic_no: '3' },
-		{ position: '13', name: 'Helium', symbol: 'He', atomic_no: '2' },
-		{ position: '14', name: 'Calcium', symbol: 'Ca', atomic_no: '20' },
-		{ position: '15', name: 'Platinum', symbol: 'Pt', atomic_no: '78' },
-	]
+	let selectedDatasource = $state(pageProps.data.datasource)
+	let blockHeight = $state('')
+	let isOpen = $state(false)
 </script>
 
+<!-- TODO: make limit configurable -->
+<!-- TODO: refresh rate should be updated using a button -->
 <div class="flex flex-col gap-y-12">
-	<div class="grid grid-cols-4 gap-4">
-		<div
-			class="card preset-filled-surface-100-900 border-surface-200-800 card-hover divide-surface-200-800 block max-w-md divide-y overflow-hidden border-[1px]"
-		>
-			<p>Card</p>
-		</div>
-		<div
-			class="card preset-filled-surface-100-900 border-surface-200-800 card-hover divide-surface-200-800 block max-w-md divide-y overflow-hidden border-[1px]"
-		>
-			<p>Card</p>
-		</div>
-		<div
-			class="card preset-filled-surface-100-900 border-surface-200-800 card-hover divide-surface-200-800 block max-w-md divide-y overflow-hidden border-[1px]"
-		>
-			<p>Card</p>
-		</div>
-		<div
-			class="card preset-filled-surface-100-900 border-surface-200-800 card-hover divide-surface-200-800 block max-w-md divide-y overflow-hidden border-[1px]"
-		>
-			<p>Card</p>
-		</div>
-	</div>
 	<div class="flex flex-row items-center">
-		<form class="mx-auto w-full space-y-4">
+		<form
+			class="mx-auto w-full space-y-4"
+			method="GET"
+			action={page.url.pathname.concat(`/${blockHeight}`)}
+		>
 			<div class="input-group grid-cols-[auto_1fr_auto]">
-				<div class="ig-cell preset-tonal">
-					<SearchIcon size={16} />
-				</div>
-				<input class="ig-input" type="search" placeholder="Search..." />
+				<Popover
+					open={isOpen}
+					onOpenChange={(e) => (isOpen = e.open)}
+					positioning={{ placement: 'bottom-end' }}
+					triggerBase="ig-btn preset-tonal w-full h-full"
+					contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
+					arrowBackground="!bg-surface-200 dark:!bg-surface-800"
+					arrow
+				>
+					{#snippet trigger()}
+						<SlidersHorizontalIcon size={16} />
+					{/snippet}
+					{#snippet content()}
+						<form class="mx-auto w-full" method="GET" action={page.url.pathname}>
+							<div class="flex flex-col gap-y-4">
+								<Combobox
+									data={pageProps.data.datasources.map((d) => ({ label: d.name, value: d.id }))}
+									label="Datasource"
+									placeholder={selectedDatasource?.name ?? ''}
+									disabled={pageProps.data.datasources.length === 0}
+									onValueChange={({ value: [id] }) => {
+										selectedDatasource = pageProps.data.datasources.find((d) => d.id === id)
+									}}
+								/>
+								<input type="hidden" name="datasourceId" value={selectedDatasource?.id} />
+								<button
+									class="btn preset-filled-primary-500 hover:preset-filled-surface-50-950 w-full transition ease-linear"
+									type="submit"
+								>
+									Update
+								</button>
+							</div>
+						</form>
+					{/snippet}
+				</Popover>
+				<input class="ig-input" type="search" bind:value={blockHeight} placeholder="Search..." />
+				<input type="hidden" name="datasourceId" value={pageProps.data.datasource?.id} />
 				<button
 					class="ig-btn preset-filled-primary-500 hover:preset-filled-surface-50-950 transition ease-linear"
-					>Submit</button
+					type="submit"
 				>
+					Submit
+				</button>
 			</div>
 		</form>
 	</div>
 	<div class="table-wrap">
-		<table class="table caption-bottom">
-			<caption class="pt-4">A list of elements from the periodic table.</caption>
-			<thead>
-				<tr>
-					<th>Position</th>
-					<th>Symbol</th>
-					<th>Name</th>
-					<th class="!text-right">Weight</th>
-				</tr>
-			</thead>
-			<tbody class="[&>tr]:hover:preset-tonal-primary">
-				{#each tableData as row (row.name)}
-					<tr>
-						<td>{row.position}</td>
-						<td>{row.symbol}</td>
-						<td>{row.name}</td>
-						<td class="text-right">{row.atomic_no}</td>
-					</tr>
-				{/each}
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="3">Total</td>
-					<td class="text-right">{tableData.length} Elements</td>
-				</tr>
-			</tfoot>
-		</table>
+		{#if pageProps.data.datasource != null}
+			{#if pageProps.data.datasource.chain === ChainType.SOLANA}
+				{#await import('./components.solana.table.svelte') then { default: SolanaTransactionsTable }}
+					<SolanaTransactionsTable blocks={pageProps.data.solana} />
+				{/await}
+			{:else if pageProps.data.datasource.chain === ChainType.STARKNET}
+				{#await import('./components.starknet.table.svelte') then { default: StarknetTransactionsTable }}
+					<StarknetTransactionsTable blocks={pageProps.data.starknet} />
+				{/await}
+			{:else if pageProps.data.datasource.chain === ChainType.APTOS}
+				{#await import('./components.aptos.table.svelte') then { default: AptosTransactionsTable }}
+					<AptosTransactionsTable blocks={pageProps.data.aptos} />
+				{/await}
+			{:else if pageProps.data.datasource.chain === ChainType.TRON}
+				{#await import('./components.tron.table.svelte') then { default: TronTransactionsTable }}
+					<TronTransactionsTable blocks={pageProps.data.tron} />
+				{/await}
+			{:else if pageProps.data.datasource.chain === ChainType.FLOW}
+				{#await import('./components.flow.table.svelte') then { default: FlowTransactionsTable }}
+					<FlowTransactionsTable blocks={pageProps.data.flow} />
+				{/await}
+			{:else if pageProps.data.datasource.chain === ChainType.ETH}
+				{#await import('./components.eth.table.svelte') then { default: EthTransactionsTable }}
+					<EthTransactionsTable blocks={pageProps.data.eth} />
+				{/await}
+			{:else}
+				<div>Unsupported chain: {pageProps.data.datasource.chain}</div>
+			{/if}
+		{:else}
+			<div>No data</div>
+		{/if}
 	</div>
 </div>

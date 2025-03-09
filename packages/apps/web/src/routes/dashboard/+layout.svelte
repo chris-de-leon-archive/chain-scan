@@ -36,19 +36,19 @@
 				<div class="flex h-full flex-col items-center justify-start">
 					<Navigation.Tile
 						id="0"
-						label="Transactions"
-						selected={pathname === routes.transactions}
-						href={routes.transactions}
-					>
-						<LayersIcon />
-					</Navigation.Tile>
-					<Navigation.Tile
-						id="1"
 						label="Blocks"
 						selected={pathname === routes.blocks}
 						href={routes.blocks}
 					>
 						<BlocksIcon />
+					</Navigation.Tile>
+					<Navigation.Tile
+						id="1"
+						label="Transactions"
+						selected={pathname === routes.transactions}
+						href={routes.transactions}
+					>
+						<LayersIcon />
 					</Navigation.Tile>
 					<Navigation.Tile
 						id="2"

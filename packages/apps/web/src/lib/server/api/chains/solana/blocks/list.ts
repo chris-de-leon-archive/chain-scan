@@ -8,7 +8,9 @@ const zSchema = z.object({
 
 const handler = async (_: Session, input: z.infer<typeof zSchema>) => {
 	const { Solana } = await import('@chain-scan/chains-solana')
-	return await new Solana(input.url).getLatestBlocks(input.limit)
+	return await new Solana(input.url)
+		.getLatestBlocks(input.limit)
+		.then((res) => structuredClone(res))
 }
 
 export const list = {

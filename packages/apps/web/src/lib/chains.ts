@@ -8,8 +8,15 @@ export const chains = [
 		description:
 			'Ethereum is an open-source blockchain that enables the use of smart contracts and decentralized applications (dApps). Launched in 2015, Ethereum has significantly contributed to the adoption of blockchain technology by providing a platform for developers to build and deploy dApps',
 		datasources: [
-			// TODO:
-			{ name: 'Ethereum Testnet Sepolia', url: '' },
+			// TODO: add more
+
+			// https://docs.arbitrum.io/build-decentralized-apps/reference/node-providers
+			{ name: 'Arbitrum One', url: 'https://arb1.arbitrum.io/rpc' },
+			{ name: 'Arbitrum Nova', url: 'https://nova.arbitrum.io/rpc' },
+			{ name: 'Arbitrum Sepolia', url: 'https://sepolia-rollup.arbitrum.io/rpc' },
+
+			// https://docs.moonbeam.network/builders/get-started/quick-start/
+			{ name: 'Moonbeam', url: 'https://moonbeam.public.blastapi.io' },
 		],
 	},
 	{
