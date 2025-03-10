@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { Popover, Combobox } from '@skeletonlabs/skeleton-svelte'
+	import Loading from '$lib/client/components/loading.svelte'
 	import { SlidersHorizontalIcon } from 'lucide-svelte'
 	import type { PageProps } from './$types'
 	import { ChainType } from '$lib/enums'
 	import { page } from '$app/state'
+
 	const pageProps: PageProps = $props()
+
+	let isOpen = $state(false)
+	const setIsOpen = (open: boolean) => (isOpen = open)
 
 	let selectedDatasource = $state(pageProps.data.datasource)
 	let transactionID = $state('')
-	let isOpen = $state(false)
 </script>
 
 <!-- TODO: make limit configurable and standardize its meaning -->
@@ -23,11 +27,11 @@
 			<div class="input-group grid-cols-[auto_1fr_auto]">
 				<Popover
 					open={isOpen}
-					onOpenChange={(e) => (isOpen = e.open)}
+					onOpenChange={(e) => setIsOpen(e.open)}
 					positioning={{ placement: 'bottom-end' }}
-					triggerBase="ig-btn preset-tonal w-full h-full"
 					contentBase="card bg-surface-200-800 p-4 space-y-4 max-w-[320px]"
 					arrowBackground="!bg-surface-200 dark:!bg-surface-800"
+					triggerBase="ig-btn preset-tonal w-full h-full"
 					arrow
 				>
 					{#snippet trigger()}
@@ -35,16 +39,20 @@
 					{/snippet}
 					{#snippet content()}
 						<form class="mx-auto w-full" method="GET" action={page.url.pathname}>
-							<div class="flex flex-col gap-y-4">
-								<Combobox
-									data={pageProps.data.datasources.map((d) => ({ label: d.name, value: d.id }))}
-									label="Datasource"
-									placeholder={selectedDatasource?.name ?? ''}
-									disabled={pageProps.data.datasources.length === 0}
-									onValueChange={({ value: [id] }) => {
-										selectedDatasource = pageProps.data.datasources.find((d) => d.id === id)
-									}}
-								/>
+							<div class="flex flex-col gap-y-6">
+								{#await pageProps.data.datasources}
+									<Loading />
+								{:then datasources}
+									<Combobox
+										data={datasources.map((d) => ({ label: d.name, value: d.id }))}
+										label="Datasource"
+										placeholder={selectedDatasource?.name ?? ''}
+										disabled={datasources.length === 0}
+										onValueChange={({ value: [id] }) => {
+											selectedDatasource = datasources.find((d) => d.id === id)
+										}}
+									/>
+								{/await}
 								<input type="hidden" name="datasourceId" value={selectedDatasource?.id} />
 								<button
 									class="btn preset-filled-primary-500 hover:preset-filled-surface-50-950 w-full transition ease-linear"

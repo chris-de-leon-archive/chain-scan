@@ -27,15 +27,15 @@ export const load: PageServerLoad = async (event) => {
 		})
 	}
 
-	const limit = qp.data.limit ?? DEFAULT_BLOCK_LIMIT
+	const datasources = api.datasources.list.handler(auth.session)
 	const ds =
 		qp.data.datasourceId == null
 			? await api.datasources.getActive.handler(auth.session)
 			: await api.datasources.getByID.handler(auth.session, { id: qp.data.datasourceId })
 
-	// TODO: layout already handles this case - needs refactoring
 	if (ds == null) {
 		return {
+			datasources,
 			datasource: undefined,
 			starknet: Promise.resolve([]),
 			solana: Promise.resolve([]),
@@ -46,9 +46,11 @@ export const load: PageServerLoad = async (event) => {
 		}
 	}
 
+	const limit = qp.data.limit ?? DEFAULT_BLOCK_LIMIT
 	switch (ds.chain) {
 		case ChainType.STARKNET:
 			return {
+				datasources,
 				datasource: ds,
 				solana: Promise.resolve([]),
 				aptos: Promise.resolve([]),
@@ -62,6 +64,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 		case ChainType.SOLANA:
 			return {
+				datasources,
 				datasource: ds,
 				starknet: Promise.resolve([]),
 				aptos: Promise.resolve([]),
@@ -75,6 +78,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 		case ChainType.APTOS:
 			return {
+				datasources,
 				datasource: ds,
 				starknet: Promise.resolve([]),
 				solana: Promise.resolve([]),
@@ -88,6 +92,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 		case ChainType.FLOW:
 			return {
+				datasources,
 				datasource: ds,
 				starknet: Promise.resolve([]),
 				solana: Promise.resolve([]),
@@ -101,6 +106,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 		case ChainType.TRON:
 			return {
+				datasources,
 				datasource: ds,
 				starknet: Promise.resolve([]),
 				solana: Promise.resolve([]),
@@ -114,6 +120,7 @@ export const load: PageServerLoad = async (event) => {
 			}
 		case ChainType.ETH:
 			return {
+				datasources,
 				datasource: ds,
 				starknet: Promise.resolve([]),
 				solana: Promise.resolve([]),

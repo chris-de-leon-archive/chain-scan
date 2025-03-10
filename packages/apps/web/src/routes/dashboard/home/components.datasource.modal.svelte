@@ -14,12 +14,12 @@
 
 	let currTab = $state(tabs.preset)
 	let isOpen = $state(false)
-	const closeModal = () => (isOpen = false)
+	const setIsOpen = (open: boolean) => (isOpen = open)
 </script>
 
 <Modal
 	open={isOpen}
-	onOpenChange={(e) => (isOpen = e.open)}
+	onOpenChange={(e) => setIsOpen(e.open)}
 	triggerBase="btn preset-filled-primary-500 hover:preset-filled-surface-50-950 rounded-full"
 	contentBase="card bg-surface-100-900 p-8 space-y-4 shadow-xl w-1/4"
 	backdropClasses="backdrop-blur-sm"
@@ -43,8 +43,8 @@
 							{...pageProps}
 							key={pageProps.chain.concat(tabs.preset)}
 							datasources={pageProps.datasources}
-							onsuccess={() => closeModal()}
-							onfailure={() => closeModal()}
+							onsuccess={() => setIsOpen(false)}
+							onfailure={() => setIsOpen(false)}
 							chain={pageProps.chain}
 						/>
 					</Tabs.Panel>
@@ -53,8 +53,8 @@
 							{...pageProps}
 							key={pageProps.chain.concat(tabs.custom)}
 							datasources={undefined}
-							onsuccess={() => closeModal()}
-							onfailure={() => closeModal()}
+							onsuccess={() => setIsOpen(false)}
+							onfailure={() => setIsOpen(false)}
 							chain={pageProps.chain}
 						/>
 					</Tabs.Panel>

@@ -33,7 +33,7 @@
 			</header>
 			<article>
 				<form class="mx-auto w-full">
-					<div class="flex flex-col gap-y-4">
+					<div class="flex flex-col gap-y-6">
 						<label class="label">
 							<span class="label-text">Email</span>
 							<input class="input" type="email" bind:value={info.email} required />

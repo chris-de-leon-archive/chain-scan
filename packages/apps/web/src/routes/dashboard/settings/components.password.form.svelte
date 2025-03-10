@@ -10,6 +10,7 @@
 	const pageProps: PageProps = $props()
 
 	let isOpen = $state(false)
+	const setIsOpen = (open: boolean) => (isOpen = open)
 
 	const { form, errors, message, reset, enhance } = superForm(pageProps.data.form.password, {
 		onResult: (event) => {
@@ -19,12 +20,12 @@
 					data: { currentPassword: '', newPassword: '' },
 					keepMessage: false,
 				})
+				setIsOpen(false)
 				toast.create({
 					description: 'Successfully updated password',
 					title: 'Success',
 					type: 'success',
 				})
-				isOpen = false
 			}
 		},
 	})
@@ -32,7 +33,7 @@
 
 <Modal
 	open={isOpen}
-	onOpenChange={(e) => (isOpen = e.open)}
+	onOpenChange={(e) => setIsOpen(e.open)}
 	triggerBase="label flex flex-col items-start justify-start w-full"
 	contentBase="card bg-surface-100-900 p-8 space-y-4 shadow-xl w-1/4"
 	backdropClasses="backdrop-blur-sm"
@@ -54,7 +55,7 @@
 			<p class="text-sm opacity-50">Update your account password.</p>
 		</header>
 		<form class="mx-auto w-full" method="POST" action="?/updatePassword" use:enhance>
-			<div class="flex flex-col gap-y-4">
+			<div class="flex flex-col gap-y-6">
 				<label class="label">
 					<span class="label-text">New Password</span>
 					<input

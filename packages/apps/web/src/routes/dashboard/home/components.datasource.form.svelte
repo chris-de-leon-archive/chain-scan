@@ -42,7 +42,7 @@
 </script>
 
 <form class="mx-auto w-full" method="POST" action="?/createDatasource" use:enhance>
-	<div class="flex flex-col gap-y-4">
+	<div class="flex flex-col gap-y-6">
 		<label class="label">
 			<span class="label-text">Name</span>
 			<input

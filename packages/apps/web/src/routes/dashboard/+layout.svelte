@@ -86,13 +86,9 @@
 						<h2 class="h2">Chain Scan Explorer</h2>
 					{/snippet}
 				</AppBar>
-				{#if pathname === routes.home || pathname === routes.settings || data.datasources.length > 0}
-					<ToastProvider>
-						{@render children()}
-					</ToastProvider>
-				{:else}
-					<p>No datasources</p>
-				{/if}
+				<ToastProvider>
+					{@render children()}
+				</ToastProvider>
 			</div>
 		</section>
 	</div>
