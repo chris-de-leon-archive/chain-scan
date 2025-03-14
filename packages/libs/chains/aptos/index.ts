@@ -4,7 +4,10 @@ import type { Chain } from "@chain-scan/types"
 
 type types = components["schemas"]
 
-export class Aptos implements Chain<types["Block"], types["Transaction"]> {
+export type Transaction = types['Transaction']
+export type Block = types['Block']
+
+export class Aptos implements Chain<Block, Transaction> {
   private readonly client: Client<paths>
 
   constructor(url: string) {
@@ -68,7 +71,7 @@ export class Aptos implements Chain<types["Block"], types["Transaction"]> {
       throw new Error(JSON.stringify(error, null, 2))
     }
 
-    const txs = new Array<types["Transaction"]>()
+    const txs = new Array<Transaction>()
     data.forEach((d) => {
       if (typeof d === "number") {
         throw new Error(`expected JSON result but got "${d}"`)
@@ -85,13 +88,13 @@ export class Aptos implements Chain<types["Block"], types["Transaction"]> {
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByHeight(
+        return await this.getBlockByID(
           this.safeCastStringToNumber(block_height) - i,
-        )
+        ).asIs()
       }),
     )
 
-    const blocks = new Array<types["Block"]>()
+    const blocks = new Array<Block>()
     results.forEach((r) => {
       if (r.status === "rejected") {
         throw new Error(r.reason)
@@ -103,34 +106,50 @@ export class Aptos implements Chain<types["Block"], types["Transaction"]> {
     return blocks
   }
 
-  getBlockByHeight = async (height?: bigint | number | undefined) => {
-    const blockHeight =
-      height != null
-        ? height
-        : await this.getLedgerInfo().then((res) => res.block_height)
+  getBlockByID = (id?: bigint | number | undefined) => {
+    const getBlock = async () => {
+      const blockHeight =
+        id != null
+          ? id
+          : await this.getLedgerInfo().then((res) => res.block_height)
 
-    const { data, error } = await this.client.GET(
-      "/blocks/by_height/{block_height}",
-      {
-        params: {
-          path: {
-            block_height: this.safeCastStringToNumber(blockHeight.toString()),
+      const { data, error } = await this.client.GET(
+        "/blocks/by_height/{block_height}",
+        {
+          params: {
+            path: {
+              block_height: this.safeCastStringToNumber(blockHeight.toString()),
+            },
+            query: {
+              with_transactions: true,
+            },
           },
         },
+      )
+
+      if (error != null) {
+        throw new Error(
+          `failed to retrieve block at height "${blockHeight}":\n${JSON.stringify(error, null, 2)}`,
+        )
+      }
+      if (Array.isArray(data)) {
+        throw new Error(
+          `failed to parse block info:\n${JSON.stringify(data, null, 2)}`,
+        )
+      }
+
+      return data
+    }
+
+    return {
+      asIs: getBlock,
+      withTransactions: async () => {
+        const block = await getBlock()
+        return {
+          block,
+          transactions: block.transactions ?? [],
+        }
       },
-    )
-
-    if (error != null) {
-      throw new Error(
-        `failed to retrieve block at height "${blockHeight}":\n${JSON.stringify(error, null, 2)}`,
-      )
     }
-    if (Array.isArray(data)) {
-      throw new Error(
-        `failed to parse block info:\n${JSON.stringify(data, null, 2)}`,
-      )
-    }
-
-    return data
   }
 }

@@ -1,7 +1,12 @@
-import { type Block, RpcProvider, type TransactionReceipt } from "starknet"
+import { RpcProvider, type Block, type TransactionReceipt as Transaction } from "starknet"
 import type { Chain } from "@chain-scan/types"
 
-export class Starknet implements Chain<Block, TransactionReceipt> {
+export type {
+  Transaction,
+  Block
+}
+
+export class Starknet implements Chain<Block, Transaction> {
   private readonly client: RpcProvider
 
   constructor(url: string) {
@@ -18,7 +23,7 @@ export class Starknet implements Chain<Block, TransactionReceipt> {
   }
 
   getLatestTransactions = async (limit: number) => {
-    const latestBlock = await this.getBlockByHeight()
+    const latestBlock = await this.getBlockByID().asIs()
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).map(async (_, i) => {
@@ -28,7 +33,7 @@ export class Starknet implements Chain<Block, TransactionReceipt> {
       }),
     )
 
-    const txs = new Array<TransactionReceipt>()
+    const txs = new Array<Transaction>()
     results.forEach((r) => {
       if (r.status === "rejected") {
         throw new Error(r.reason)
@@ -41,11 +46,11 @@ export class Starknet implements Chain<Block, TransactionReceipt> {
   }
 
   getLatestBlocks = async (limit: number) => {
-    const latestBlock = await this.getBlockByHeight()
+    const latestBlock = await this.getBlockByID().asIs()
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByHeight(latestBlock.block_number - i)
+        return await this.getBlockByID(latestBlock.block_number - i).asIs()
       }),
     )
 
@@ -61,22 +66,39 @@ export class Starknet implements Chain<Block, TransactionReceipt> {
     return blocks
   }
 
-  getBlockByHeight = async (height?: bigint | number | undefined) => {
-    const h =
-      height != null
-        ? height
-        : await this.client
-            .getBlockLatestAccepted()
-            .then((res) => res.block_number)
+  getBlockByID = (id?: bigint | number | undefined) => {
+    const getBlock = async () => {
+      const num =
+        id != null
+          ? id.toString()
+          : await this.client
+              .getBlockLatestAccepted()
+              .then((res) => res.block_number.toString())
 
-    while (true) {
-      const block = await this.client.getBlock(h)
-      if (block.status === "PENDING") {
-        await this.client.waitForBlock(h)
-        continue
-      } else {
-        return block
+      while (true) {
+        const b = await this.client.getBlock(num)
+        if (b.status === "PENDING") {
+          await this.client.waitForBlock(num)
+          continue
+        } else {
+          return b
+        }
       }
+    }
+
+    return {
+      asIs: getBlock,
+      withTransactions: async () => {
+        const block = await getBlock()
+        return {
+          block,
+          transactions: await this.client
+            .getBlockWithReceipts(block.block_number)
+            .then(({ transactions }) =>
+              transactions.map(({ receipt }) => receipt),
+            ),
+        }
+      },
     }
   }
 }

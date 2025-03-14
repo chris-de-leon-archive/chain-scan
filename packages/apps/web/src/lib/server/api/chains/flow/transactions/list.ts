@@ -1,4 +1,5 @@
 import type { Session } from 'better-auth'
+import { tx } from '../utils'
 import { z } from 'zod'
 
 const zSchema = z.object({
@@ -8,14 +9,8 @@ const zSchema = z.object({
 
 const handler = async (_: Session, input: z.infer<typeof zSchema>) => {
 	const { Flow } = await import('@chain-scan/chains-flow')
-	return await new Flow(input.url).getLatestTransactions(input.limit).then((txs) => {
-		return structuredClone(
-			txs.map((tx) => ({
-				...tx,
-				computationUsage: tx.computationUsage.toString(),
-			})),
-		)
-	})
+	const result = await new Flow(input.url).getLatestTransactions(input.limit)
+	return await Promise.all(result.map(tx)).then((res) => structuredClone(res))
 }
 
 export const list = {

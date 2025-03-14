@@ -13,8 +13,8 @@
 		<caption class="pt-4">A list of blocks.</caption>
 		<thead>
 			<tr>
+				<th>Block ID</th>
 				<th>Block Hash</th>
-				<th>Block Number</th>
 				<th>Block Timestamp</th>
 				<th>Gas Used</th>
 				<th class="!text-right">Difficulty</th>
@@ -23,8 +23,8 @@
 		<tbody>
 			{#each rows as row, i (i)}
 				<tr>
-					<td>{row.hash}</td>
 					<td>{row.number}</td>
+					<td>{row.hash}</td>
 					<td>{row.timestamp}</td>
 					<td>{row.gasUsed}</td>
 					<td class="text-right">{row.difficulty}</td>

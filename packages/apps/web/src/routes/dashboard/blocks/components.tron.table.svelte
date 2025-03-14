@@ -14,7 +14,7 @@
 		<thead>
 			<tr>
 				<th>Block ID</th>
-				<th>Block Number</th>
+				<th>Block Hash</th>
 				<th>Block Timestamp</th>
 				<th>Version</th>
 				<th class="!text-right">Transaction Count</th>
@@ -23,8 +23,8 @@
 		<tbody>
 			{#each rows as row, i (i)}
 				<tr>
-					<td>{row.blockID}</td>
 					<td>{row.block_header.raw_data.number}</td>
+					<td>{row.blockID}</td>
 					<td>{row.block_header.raw_data.timestamp}</td>
 					<td>{row.block_header.raw_data.version}</td>
 					<td class="text-right">{row.transactions?.length ?? 0}</td>

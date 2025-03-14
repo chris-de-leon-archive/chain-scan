@@ -4,9 +4,10 @@ import * as sol from "@solana/web3.js"
 // https://solana.com/developers/guides/advanced/versions#current-transaction-versions
 const maxSupportedTransactionVersion = 0
 
-type Block = sol.VersionedBlockResponse & { slot: number }
+export type Transaction = Block['transactions'][number]
+export type Block = sol.VersionedBlockResponse & { slot: number }
 
-export class Solana implements Chain<Block, sol.VersionedTransactionResponse> {
+export class Solana implements Chain<Block, Transaction> {
   private readonly client: sol.Connection
 
   constructor(url: string) {
@@ -36,37 +37,50 @@ export class Solana implements Chain<Block, sol.VersionedTransactionResponse> {
   }
 
   getLatestBlocks = async (limit: number) => {
-    const latestBlock = await this.getBlockByHeight()
+    const latestBlock = await this.getBlockByID().asIs()
 
     const blocks = new Array<Block>()
     while (blocks.length < limit) {
       const lastBlock = blocks.at(-1) ?? latestBlock
-      const nextBlock = await this.getBlockByHeight(lastBlock.parentSlot)
+      const nextBlock = await this.getBlockByID(lastBlock.parentSlot).asIs()
       blocks.push({ ...nextBlock, slot: lastBlock.parentSlot })
     }
 
     return blocks
   }
 
-  getBlockByHeight = async (height?: bigint | number | undefined) => {
-    const slot = parseInt(
-      (height ?? (await this.client.getSlot())).toString(),
-      10,
-    )
+  getBlockByID = (id?: bigint | number | undefined) => {
+    const getBlock = async (withTransactions: boolean) => {
+      const slot = parseInt(
+        (id ?? (await this.client.getSlot())).toString(),
+        10,
+      )
 
-    if (Number.isNaN(slot)) {
-      throw new Error("failed to parse integer")
+      if (Number.isNaN(slot)) {
+        throw new Error("failed to parse integer")
+      }
+
+      const block = await this.client.getBlock(slot, {
+        maxSupportedTransactionVersion,
+        transactionDetails: withTransactions ? "full" : "none",
+      })
+
+      if (block == null) {
+        throw new Error(`failed to retrieve block at slot "${slot}"`)
+      } else {
+        return { ...block, slot: slot }
+      }
     }
 
-    const block = await this.client.getBlock(slot, {
-      maxSupportedTransactionVersion,
-      transactionDetails: "full",
-    })
-
-    if (block == null) {
-      throw new Error(`failed to retrieve block at slot "${slot}"`)
-    } else {
-      return { ...block, slot: slot }
+    return {
+      asIs: async () => await getBlock(false),
+      withTransactions: async () => {
+        const block = await getBlock(true)
+        return {
+          block,
+          transactions: block.transactions,
+        }
+      },
     }
   }
 }

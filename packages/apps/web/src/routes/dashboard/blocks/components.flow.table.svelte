@@ -14,26 +14,24 @@
 		<thead>
 			<tr>
 				<th>Block ID</th>
-				<th>Block Height</th>
-				<th>Block Timestamp</th>
-				<th>Parent ID</th>
-				<th class="!text-right">Signature Count</th>
+				<th>Block Hash</th>
+				<th>Timestamp</th>
+				<th class="!text-right">Parent Hash</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each rows as row, i (i)}
 				<tr>
-					<td>0x{Buffer.from(row.id).toString('hex')}</td>
 					<td>{row.height}</td>
-					<td>{row.timestamp?.seconds ?? 'N/A'}</td>
-					<td>0x{Buffer.from(row.parentId).toString('hex')}</td>
-					<td class="text-right">{row.signatures.length}</td>
+					<td>{row.id}</td>
+					<td>{row.timestamp}</td>
+					<td class="text-right">{row.parentId}</td>
 				</tr>
 			{/each}
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="4">Total</td>
+				<td colspan="3">Total</td>
 				<td class="text-right">{rows.length ?? 0} Items</td>
 			</tr>
 		</tfoot>

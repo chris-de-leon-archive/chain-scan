@@ -1,7 +1,10 @@
 import type { Chain } from "@chain-scan/types"
 import { ethers } from "ethers"
 
-export class Eth implements Chain<ethers.Block, ethers.TransactionResponse> {
+export type Transaction = ethers.TransactionResponse
+export type Block = ethers.Block
+
+export class Eth implements Chain<Block, Transaction> {
   private readonly client: ethers.JsonRpcProvider
 
   constructor(...args: ConstructorParameters<typeof ethers.JsonRpcProvider>) {
@@ -18,7 +21,7 @@ export class Eth implements Chain<ethers.Block, ethers.TransactionResponse> {
   }
 
   getLatestTransactions = async (limit: number) => {
-    const latestBlock = await this.getBlockByHeight()
+    const latestBlock = await this.getBlockByID().asIs()
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).flatMap(async (_, i) => {
@@ -32,7 +35,7 @@ export class Eth implements Chain<ethers.Block, ethers.TransactionResponse> {
       }),
     )
 
-    const txs = new Array<ethers.TransactionResponse>()
+    const txs = new Array<Transaction>()
     results.forEach((r) => {
       if (r.status === "rejected") {
         throw new Error(r.reason)
@@ -49,7 +52,7 @@ export class Eth implements Chain<ethers.Block, ethers.TransactionResponse> {
 
     const results = await Promise.allSettled(
       Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByHeight(blockHeight - i)
+        return await this.getBlockByID(blockHeight - i).asIs()
       }),
     )
 
@@ -65,15 +68,29 @@ export class Eth implements Chain<ethers.Block, ethers.TransactionResponse> {
     return blocks
   }
 
-  getBlockByHeight = async (height?: bigint | number | undefined) => {
-    const blockHeight =
-      height != null ? height : await this.client.getBlockNumber()
+  getBlockByID = (id?: bigint | number | undefined) => {
+    const getBlock = async (withTransactions: boolean) => {
+      const blockHeight = id != null ? id : await this.client.getBlockNumber()
 
-    const block = await this.client.getBlock(blockHeight)
-    if (block == null) {
-      throw new Error(`block with number "${height}" does not exist`)
-    } else {
-      return block
+      const block = await this.client.getBlock(blockHeight, withTransactions)
+      if (block == null) {
+        throw new Error(`block with number "${id}" does not exist`)
+      } else {
+        return block
+      }
+    }
+
+    return {
+      asIs: async () => await getBlock(false),
+      withTransactions: async () => {
+        const block = await getBlock(true)
+        return {
+          block,
+          transactions: block.transactions.map((hash) =>
+            block.getPrefetchedTransaction(hash),
+          ),
+        }
+      },
     }
   }
 }

@@ -13,20 +13,20 @@
 		<caption class="pt-4">A list of blocks.</caption>
 		<thead>
 			<tr>
+				<th>Block ID</th>
 				<th>Block Hash</th>
-				<th>Slot</th>
-				<th>Previous Block Hash</th>
-				<th>Parent Slot</th>
+				<th>Parent ID</th>
+				<th>Parent Block Hash</th>
 				<th class="!text-right">Transaction Count</th>
 			</tr>
 		</thead>
 		<tbody>
 			{#each rows as row, i (i)}
 				<tr>
-					<td>{row.blockhash}</td>
 					<td>{row.slot}</td>
-					<td>{row.previousBlockhash}</td>
+					<td>{row.blockhash}</td>
 					<td>{row.parentSlot}</td>
+					<td>{row.previousBlockhash}</td>
 					<td class="text-right">{row.transactions.length}</td>
 				</tr>
 			{/each}

@@ -64,7 +64,7 @@
 						</form>
 					{/snippet}
 				</Popover>
-				<input class="ig-input" type="search" bind:value={transactionID} placeholder="Search..." />
+				<input class="ig-input" type="search" bind:value={transactionID} placeholder="Search by ID..." />
 				<input type="hidden" name="datasourceId" value={pageProps.data.datasource?.id} />
 				<button
 					class="ig-btn preset-filled-primary-500 hover:preset-filled-surface-50-950 transition ease-linear"
