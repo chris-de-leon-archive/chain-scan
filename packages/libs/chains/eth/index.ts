@@ -1,14 +1,85 @@
 import type { Chain } from "@chain-scan/types"
+import * as crypto from "node:crypto"
 import { ethers } from "ethers"
 
-export type Transaction = ethers.TransactionResponse
-export type Block = ethers.Block
+export interface SerializableTransaction {
+  maxPriorityFeePerGas: string | undefined
+  maxFeePerBlobGas: string | undefined
+  maxFeePerGas: string | undefined
+  blockNumber: number | null
+  blockHash: string | null
+  gasLimit: string
+  gasPrice: string
+  chainId: string
+  value: string
+  index: number
+  hash: string
+  from: string
+  to: string | null
+}
 
-export class Eth implements Chain<Block, Transaction> {
+export interface SerializableBlock {
+  baseFeePerGas: string | undefined
+  excessBlobGas: string | undefined
+  blobGasUsed: string | undefined
+  difficulty: string
+  parentHash: string
+  timestamp: number
+  gasLimit: string
+  gasUsed: string
+  number: number
+  hash: string | null
+}
+
+export class Eth implements Chain<SerializableBlock, SerializableTransaction> {
   private readonly client: ethers.JsonRpcProvider
 
-  constructor(...args: ConstructorParameters<typeof ethers.JsonRpcProvider>) {
-    this.client = new ethers.JsonRpcProvider(...args)
+  constructor(private readonly url: string) {
+    this.client = new ethers.JsonRpcProvider(url)
+  }
+
+  static toSerializableTransaction = (
+    tx: ethers.TransactionResponse,
+  ): SerializableTransaction => {
+    return {
+      maxPriorityFeePerGas: tx.maxPriorityFeePerGas?.toString(),
+      maxFeePerBlobGas: tx.maxFeePerBlobGas?.toString(),
+      maxFeePerGas: tx.maxFeePerGas?.toString(),
+      blockNumber: tx.blockNumber,
+      blockHash: tx.blockHash,
+      gasLimit: tx.gasLimit.toString(),
+      gasPrice: tx.gasPrice.toString(),
+      chainId: tx.chainId.toString(),
+      value: tx.value.toString(),
+      index: tx.index,
+      hash: tx.hash,
+      from: tx.from,
+      to: tx.to,
+    }
+  }
+
+  static toSerializableBlock = (block: ethers.Block): SerializableBlock => {
+    return {
+      baseFeePerGas: block.baseFeePerGas?.toString(),
+      excessBlobGas: block.excessBlobGas?.toString(),
+      blobGasUsed: block.blobGasUsed?.toString(),
+      difficulty: block.difficulty.toString(),
+      parentHash: block.parentHash,
+      gasLimit: block.gasLimit.toString(),
+      gasUsed: block.gasUsed.toString(),
+      timestamp: block.timestamp,
+      number: block.number,
+      hash: block.hash,
+    }
+  }
+
+  ID = () => {
+    return crypto
+      .createHash("md5")
+      .update(Eth.name.toLowerCase())
+      .update(this.url)
+      .digest()
+      .toString("hex")
   }
 
   getTransactionByID = async (id: string) => {
@@ -16,79 +87,37 @@ export class Eth implements Chain<Block, Transaction> {
     if (tx == null) {
       throw new Error(`transaction with ID "${id}" does not exist`)
     } else {
-      return tx
+      return Eth.toSerializableTransaction(tx)
     }
   }
 
-  getLatestTransactions = async (limit: number) => {
-    const latestBlock = await this.getBlockByID().asIs()
-
-    const results = await Promise.allSettled(
-      Array.from({ length: limit }).flatMap(async (_, i) => {
-        const height = latestBlock.number - i
-        const block = await this.client.getBlock(height, true)
-        if (block == null) {
-          throw new Error(`failed to fetch block at height "${height}"`)
-        } else {
-          return block.prefetchedTransactions
-        }
-      }),
-    )
-
-    const txs = new Array<Transaction>()
-    results.forEach((r) => {
-      if (r.status === "rejected") {
-        throw new Error(r.reason)
-      } else {
-        txs.push(...r.value)
-      }
-    })
-
-    return txs
+  getLatestBlockNumber = async () => {
+    return await this.client.getBlockNumber().then((n) => BigInt(n))
   }
 
-  getLatestBlocks = async (limit: number) => {
-    const blockHeight = await this.client.getBlockNumber()
-
-    const results = await Promise.allSettled(
-      Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByID(blockHeight - i).asIs()
-      }),
-    )
-
-    const blocks = new Array<ethers.Block>()
-    results.forEach((r) => {
-      if (r.status === "rejected") {
-        throw new Error(r.reason)
-      } else {
-        blocks.push(r.value)
-      }
-    })
-
-    return blocks
-  }
-
-  getBlockByID = (id?: bigint | number | undefined) => {
+  getBlockByNumber = (num?: bigint | number | undefined) => {
     const getBlock = async (withTransactions: boolean) => {
-      const blockHeight = id != null ? id : await this.client.getBlockNumber()
+      const blockHeight = num != null ? num : await this.client.getBlockNumber()
 
       const block = await this.client.getBlock(blockHeight, withTransactions)
       if (block == null) {
-        throw new Error(`block with number "${id}" does not exist`)
+        throw new Error(`block with number "${num}" does not exist`)
       } else {
         return block
       }
     }
 
     return {
-      asIs: async () => await getBlock(false),
+      asIs: async () => await getBlock(false).then(Eth.toSerializableBlock),
       withTransactions: async () => {
         const block = await getBlock(true)
+        const trxns = block.transactions.map((hash) =>
+          block.getPrefetchedTransaction(hash),
+        )
+
         return {
-          block,
-          transactions: block.transactions.map((hash) =>
-            block.getPrefetchedTransaction(hash),
-          ),
+          block: Eth.toSerializableBlock(block),
+          transactions: trxns.map(Eth.toSerializableTransaction),
         }
       },
     }

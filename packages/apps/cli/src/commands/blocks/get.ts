@@ -2,6 +2,7 @@ import { buildChainClient } from "../../lib/client"
 import { Args, Command, Flags } from "@oclif/core"
 import { formatJSON } from "../../lib/utils"
 import { ChainType } from "../../lib/enums"
+import { cache } from "../../lib/cache"
 import { z } from "zod"
 
 export default class BlocksGet extends Command {
@@ -23,8 +24,11 @@ export default class BlocksGet extends Command {
     const chainOpts = { url: flags.url.href }
 
     const client = await buildChainClient(chainType, chainOpts)
-    await client
-      .getBlockByHeight(args.height)
-      .then((res) => this.log(formatJSON(res)))
+    await cache
+      .setdir(this.config.cacheDir)
+      .connect(client)
+      .getBlockByNumber(args.height)
+      .withTransactions()
+      .then((res) => this.logJson(formatJSON(res)))
   }
 }

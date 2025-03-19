@@ -1,14 +1,6 @@
 import { ApiError, HttpCode, HttpStatus } from './errors'
 import { z } from 'zod'
 
-export const toHexString = (v: Uint8Array) => {
-	const s = Buffer.from(v).toString('hex')
-	return {
-		withoutPrefix: () => s,
-		withPrefix: () => '0x'.concat(s),
-	}
-}
-
 export const safeParseQueryParams = <T extends z.ZodTypeAny>(
 	url: URL,
 	schema: T,

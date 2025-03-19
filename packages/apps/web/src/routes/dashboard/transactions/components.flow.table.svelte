@@ -16,7 +16,6 @@
 				<th>Transaction ID</th>
 				<th>Block Height</th>
 				<th>Block ID</th>
-				<th>Computation Usage</th>
 				<th class="!text-right">Status</th>
 			</tr>
 		</thead>
@@ -26,14 +25,13 @@
 					<td>{row.transactionId}</td>
 					<td>{row.blockHeight}</td>
 					<td>{row.blockId}</td>
-					<td>{row.computationUsage}</td>
 					<td class="text-right">{row.status}</td>
 				</tr>
 			{/each}
 		</tbody>
 		<tfoot>
 			<tr>
-				<td colspan="4">Total</td>
+				<td colspan="3">Total</td>
 				<td class="text-right">{rows.length ?? 0} Items</td>
 			</tr>
 		</tfoot>

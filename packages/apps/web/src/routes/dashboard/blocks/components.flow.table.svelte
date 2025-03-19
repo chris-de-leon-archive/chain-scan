@@ -24,7 +24,7 @@
 				<tr>
 					<td>{row.height}</td>
 					<td>{row.id}</td>
-					<td>{row.timestamp}</td>
+					<td>{row.timestamp?.toLocaleString()}</td>
 					<td class="text-right">{row.parentId}</td>
 				</tr>
 			{/each}

@@ -1,3 +1,4 @@
+import type { Chain } from "@chain-scan/types"
 import { AssertUnreachable } from "../utils"
 import { ChainType } from "../enums"
 
@@ -8,7 +9,7 @@ export interface ChainClientOptions {
 export const buildChainClient = async (
   chain: ChainType,
   opts: ChainClientOptions,
-) => {
+): Promise<Chain<unknown, unknown>> => {
   switch (chain) {
     case ChainType.STARKNET:
       return await import("@chain-scan/chains-starknet").then(

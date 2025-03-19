@@ -1,0 +1,4 @@
+{
+  "name": "@chain-scan/encoding",
+  "exports": "./index.ts"
+}

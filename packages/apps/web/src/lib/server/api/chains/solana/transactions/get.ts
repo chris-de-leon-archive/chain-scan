@@ -1,4 +1,5 @@
 import type { Session } from 'better-auth'
+import { solana } from '../utils'
 import { z } from 'zod'
 
 const zSchema = z.object({
@@ -7,8 +8,7 @@ const zSchema = z.object({
 })
 
 const handler = async (_: Session, input: z.infer<typeof zSchema>) => {
-	const { Solana } = await import('@chain-scan/chains-solana')
-	return await new Solana(input.url).getTransactionByID(input.id).then(structuredClone)
+	return await solana.withUrl(input.url).getTransactionByID(input.id)
 }
 
 export const get = {

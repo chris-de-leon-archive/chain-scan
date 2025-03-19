@@ -1,0 +1,8 @@
+{
+  "name": "@chain-scan/cache-lmdb",
+  "exports": "./index.ts",
+  "dependencies": {
+    "@chain-scan/types": "workspace:*",
+    "lmdb": "3.2.6"
+  }
+}

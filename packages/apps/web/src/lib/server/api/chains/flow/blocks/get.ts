@@ -1,6 +1,6 @@
 import type { Session } from 'better-auth'
+import { flow } from '../utils'
 import { z } from 'zod'
-import { block, tx } from '../utils'
 
 const zSchema = z.object({
 	id: z.bigint().min(0n),
@@ -8,12 +8,7 @@ const zSchema = z.object({
 })
 
 const handler = async (_: Session, input: z.infer<typeof zSchema>) => {
-	const { Flow } = await import('@chain-scan/chains-flow')
-	const result = await new Flow(input.url).getBlockByID(input.id).withTransactions()
-	return structuredClone({
-		transactions: await Promise.all(result.transactions.map(tx)),
-		block: block(result.block),
-	})
+	return await flow.withUrl(input.url).getBlockByNumber(input.id).withTransactions()
 }
 
 export const get = {

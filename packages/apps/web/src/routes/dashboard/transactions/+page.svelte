@@ -15,7 +15,7 @@
 	let transactionID = $state('')
 </script>
 
-<!-- TODO: make limit configurable and standardize its meaning -->
+<!-- TODO: make limit configurable -->
 <!-- TODO: refresh rate should be updated using a button -->
 <div class="flex flex-col gap-y-12">
 	<div class="flex flex-row items-center">
@@ -64,7 +64,12 @@
 						</form>
 					{/snippet}
 				</Popover>
-				<input class="ig-input" type="search" bind:value={transactionID} placeholder="Search by ID..." />
+				<input
+					class="ig-input"
+					type="search"
+					bind:value={transactionID}
+					placeholder="Search by ID..."
+				/>
 				<input type="hidden" name="datasourceId" value={pageProps.data.datasource?.id} />
 				<button
 					class="ig-btn preset-filled-primary-500 hover:preset-filled-surface-50-950 transition ease-linear"

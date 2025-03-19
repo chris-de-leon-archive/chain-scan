@@ -5,8 +5,6 @@ import { ChainType } from '$lib/enums'
 import { error } from '@sveltejs/kit'
 import { z } from 'zod'
 
-// TODO: add support for `limit`
-
 export const load: PageServerLoad = async (event) => {
 	const { auth } = await event.parent()
 
@@ -46,6 +44,7 @@ export const load: PageServerLoad = async (event) => {
 		}
 	}
 
+	const limit = Math.max(qp.data.limit ?? 15, 15)
 	switch (ds.chain) {
 		case ChainType.STARKNET:
 			return {
@@ -58,7 +57,7 @@ export const load: PageServerLoad = async (event) => {
 				eth: Promise.resolve([]),
 				starknet: api.chains.starknet.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 10,
+					limit,
 				}),
 			}
 		case ChainType.SOLANA:
@@ -72,7 +71,7 @@ export const load: PageServerLoad = async (event) => {
 				eth: Promise.resolve([]),
 				solana: api.chains.solana.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 1,
+					limit,
 				}),
 			}
 		case ChainType.APTOS:
@@ -86,7 +85,7 @@ export const load: PageServerLoad = async (event) => {
 				eth: Promise.resolve([]),
 				aptos: api.chains.aptos.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 25,
+					limit,
 				}),
 			}
 		case ChainType.FLOW:
@@ -100,7 +99,7 @@ export const load: PageServerLoad = async (event) => {
 				eth: Promise.resolve([]),
 				flow: api.chains.flow.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 1,
+					limit,
 				}),
 			}
 		case ChainType.TRON:
@@ -114,7 +113,7 @@ export const load: PageServerLoad = async (event) => {
 				eth: Promise.resolve([]),
 				tron: api.chains.tron.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 1,
+					limit,
 				}),
 			}
 		case ChainType.ETH:
@@ -128,7 +127,7 @@ export const load: PageServerLoad = async (event) => {
 				tron: Promise.resolve([]),
 				eth: api.chains.eth.transactions.list.handler(auth.session, {
 					url: ds.url,
-					limit: 1,
+					limit,
 				}),
 			}
 		default:

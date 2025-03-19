@@ -3,8 +3,8 @@
   "type": "module",
   "scripts": {
     "postinstall": "bun run --filter='@chain-scan/chains-flow' --filter='@chain-scan/chains-aptos' gen",
-    "lint": "eslint --debug ./packages/libs",
-    "fmt": "prettier ./packages --write"
+    "format": "prettier ./packages/apps/cli ./packages/libs --write",
+    "lint": "eslint --debug ./packages/libs"
   },
   "devDependencies": {
     "@eslint/js": "9.21.0",

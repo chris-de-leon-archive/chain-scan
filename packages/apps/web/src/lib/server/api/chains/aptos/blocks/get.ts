@@ -1,4 +1,5 @@
 import type { Session } from 'better-auth'
+import { aptos } from '../utils'
 import { z } from 'zod'
 
 const zSchema = z.object({
@@ -7,8 +8,7 @@ const zSchema = z.object({
 })
 
 const handler = async (_: Session, input: z.infer<typeof zSchema>) => {
-	const { Aptos } = await import('@chain-scan/chains-aptos')
-	return await new Aptos(input.url).getBlockByID(input.id).withTransactions()
+	return await aptos.withUrl(input.url).getBlockByNumber(input.id).withTransactions()
 }
 
 export const get = {

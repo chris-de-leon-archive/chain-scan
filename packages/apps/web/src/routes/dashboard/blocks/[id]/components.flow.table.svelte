@@ -2,7 +2,6 @@
 	import Loading from '$lib/client/components/loading.svelte'
 	import { Tabs } from '@skeletonlabs/skeleton-svelte'
 	import type { api } from '$lib/server/api'
-	import { Chains } from '$lib/client/chains'
 
 	const tabs = { transactions: 'Transactions' }
 	let currTab = $state(tabs.transactions)
@@ -26,7 +25,7 @@
 						</tr>
 						<tr>
 							<td>Block Timestamp</td>
-							<td class="text-right">{result.block.timestamp}</td>
+							<td class="text-right">{result.block.timestamp?.toLocaleString()}</td>
 						</tr>
 						<tr>
 							<td>Block Hash</td>
@@ -70,7 +69,7 @@
 														<tr>
 															<td>Status</td>
 															<td class="text-right">
-																{Chains.interpretFlowTransactionStatus(tx.status)}
+																{tx.status}
 															</td>
 														</tr>
 													</tbody>

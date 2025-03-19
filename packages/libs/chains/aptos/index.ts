@@ -1,16 +1,17 @@
 import createClient, { type Client } from "openapi-fetch"
 import { type paths, type components } from "./client"
 import type { Chain } from "@chain-scan/types"
+import * as crypto from "node:crypto"
 
 type types = components["schemas"]
 
-export type Transaction = types['Transaction']
-export type Block = types['Block']
+export type Transaction = types["Transaction"]
+export type Block = types["Block"]
 
 export class Aptos implements Chain<Block, Transaction> {
   private readonly client: Client<paths>
 
-  constructor(url: string) {
+  constructor(private readonly url: string) {
     this.client = createClient<paths>({ baseUrl: url })
   }
 
@@ -37,6 +38,15 @@ export class Aptos implements Chain<Block, Transaction> {
     return data
   }
 
+  ID = () => {
+    return crypto
+      .createHash("md5")
+      .update(Aptos.name.toLowerCase())
+      .update(this.url)
+      .digest()
+      .toString("hex")
+  }
+
   getTransactionByID = async (id: string) => {
     const { data, error } = await this.client.GET(
       "/transactions/by_hash/{txn_hash}",
@@ -60,58 +70,13 @@ export class Aptos implements Chain<Block, Transaction> {
     return data
   }
 
-  getLatestTransactions = async (limit: number) => {
-    const { data, error } = await this.client.GET("/transactions", {
-      params: {
-        query: { limit },
-      },
-    })
-
-    if (error != null) {
-      throw new Error(JSON.stringify(error, null, 2))
-    }
-
-    const txs = new Array<Transaction>()
-    data.forEach((d) => {
-      if (typeof d === "number") {
-        throw new Error(`expected JSON result but got "${d}"`)
-      } else {
-        txs.push(d)
-      }
-    })
-
-    return txs
+  getLatestBlockNumber = async () => {
+    return await this.getLedgerInfo().then((res) => BigInt(res.block_height))
   }
 
-  getLatestBlocks = async (limit: number) => {
-    const { block_height } = await this.getLedgerInfo()
-
-    const results = await Promise.allSettled(
-      Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByID(
-          this.safeCastStringToNumber(block_height) - i,
-        ).asIs()
-      }),
-    )
-
-    const blocks = new Array<Block>()
-    results.forEach((r) => {
-      if (r.status === "rejected") {
-        throw new Error(r.reason)
-      } else {
-        blocks.push(r.value)
-      }
-    })
-
-    return blocks
-  }
-
-  getBlockByID = (id?: bigint | number | undefined) => {
+  getBlockByNumber = (num?: bigint | number | undefined) => {
     const getBlock = async () => {
-      const blockHeight =
-        id != null
-          ? id
-          : await this.getLedgerInfo().then((res) => res.block_height)
+      const blockHeight = num != null ? num : await this.getLatestBlockNumber()
 
       const { data, error } = await this.client.GET(
         "/blocks/by_height/{block_height}",

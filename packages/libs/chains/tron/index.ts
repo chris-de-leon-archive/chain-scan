@@ -1,4 +1,5 @@
 import type { Chain } from "@chain-scan/types"
+import * as crypto from "node:crypto"
 import { TronWeb } from "tronweb"
 
 export type Transaction = Awaited<ReturnType<TronWeb["trx"]["getTransaction"]>>
@@ -7,7 +8,7 @@ export type Block = Awaited<ReturnType<TronWeb["trx"]["getBlock"]>>
 export class Tron implements Chain<Block, Transaction> {
   private readonly client: TronWeb
 
-  constructor(url: string) {
+  constructor(private readonly url: string) {
     this.client = new TronWeb({ fullHost: url })
   }
 
@@ -29,62 +30,31 @@ export class Tron implements Chain<Block, Transaction> {
     }
   }
 
+  ID = () => {
+    return crypto
+      .createHash("md5")
+      .update(Tron.name.toLowerCase())
+      .update(this.url)
+      .digest()
+      .toString("hex")
+  }
+
   getTransactionByID = async (id: string) => {
     return await this.client.trx.getTransaction(id)
   }
 
-  getLatestTransactions = async (limit: number) => {
-    const latestBlock = await this.getBlockByID().asIs()
-
-    const results = await Promise.allSettled(
-      Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getTxsFromBlock(
-          latestBlock.block_header.raw_data.number - i,
-        )
-      }),
-    )
-
-    const txs = new Array<Transaction>()
-    results.forEach((r) => {
-      if (r.status === "rejected") {
-        throw new Error(r.reason)
-      } else {
-        txs.push(...r.value)
-      }
-    })
-
-    return txs
+  getLatestBlockNumber = async () => {
+    return await this.client.trx
+      .getCurrentBlock()
+      .then((b) => BigInt(b.block_header.raw_data.number))
   }
 
-  getLatestBlocks = async (limit: number) => {
-    const latestBlock = await this.getBlockByID().asIs()
-
-    const results = await Promise.allSettled(
-      Array.from({ length: limit }).map(async (_, i) => {
-        return await this.getBlockByID(
-          latestBlock.block_header.raw_data.number - i,
-        ).asIs()
-      }),
-    )
-
-    const blocks = new Array<typeof latestBlock>()
-    results.forEach((r) => {
-      if (r.status === "rejected") {
-        throw new Error(r.reason)
-      } else {
-        blocks.push(r.value)
-      }
-    })
-
-    return blocks
-  }
-
-  getBlockByID = (id?: bigint | number | undefined) => {
+  getBlockByNumber = (num?: bigint | number | undefined) => {
     const getBlock = async () => {
-      if (id == null) {
+      if (num == null) {
         return await this.client.trx.getBlock("latest")
       } else {
-        return await this.client.trx.getBlock(id.toString())
+        return await this.client.trx.getBlock(num.toString())
       }
     }
 
