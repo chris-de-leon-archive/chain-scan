@@ -2,7 +2,7 @@
 {
   inputs = {
     nixpkgs.url = "https://github.com/NixOS/nixpkgs/archive/5996243e793c19a0933c8df5869b79088279343d.tar.gz";
-    secrets.url = "https://github.com/chris-de-leon/secrets-cli/archive/refs/tags/v1.1.0.tar.gz";
+    secrets.url = "https://github.com/chris-de-leon/secrets-cli/archive/refs/tags/v1.2.2.tar.gz";
     utils.url = "github:numtide/flake-utils";
   };
 
