@@ -17,10 +17,11 @@
     "packages/apps/cli": {
       "name": "@chain-scan/cli",
       "bin": {
-        "cli": "./dist/bin"
+        "cli": "./dist/bin",
       },
       "dependencies": {
         "@chain-scan/cache-lmdb": "workspace:",
+        "@chain-scan/cache-types": "workspace:",
         "@chain-scan/chains-aptos": "workspace:",
         "@chain-scan/chains-eth": "workspace:",
         "@chain-scan/chains-flow": "workspace:",
@@ -337,6 +338,8 @@
     "@bufbuild/protoplugin": ["@bufbuild/protoplugin@2.2.3", "", { "dependencies": { "@bufbuild/protobuf": "2.2.3", "@typescript/vfs": "^1.5.2", "typescript": "5.4.5" } }, "sha512-UsV7mj6NJTZrqIYJK+jNFnnj5tOS7wgNXKyMjebFEpf+OX6pfXE+nx+QPjumOfu4GxdVPfEDnKuwISgqlXSQqw=="],
 
     "@chain-scan/cache-lmdb": ["@chain-scan/cache-lmdb@workspace:packages/libs/cache/lmdb"],
+
+    "@chain-scan/cache-types": ["@chain-scan/cli@workspace:packages/apps/cli"],
 
     "@chain-scan/chains-aptos": ["@chain-scan/chains-aptos@workspace:packages/libs/chains/aptos"],
 
