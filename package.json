@@ -2,7 +2,6 @@
   "name": "chain-scan",
   "type": "module",
   "scripts": {
-    "env:all:save": "bws run --shell='bash' --project-id=\"${BWS_PROJECT_ID}\" -- \"BWS_ACCESS_TOKEN=\"$BWS_ACCESS_TOKEN\" bash ./scripts/bws/save.sh\"",
     "nix:update": "nix flake update",
     "nix:lock": "nix flake lock",
     "postinstall": "bun run --filter='@chain-scan/chains-flow' --filter='@chain-scan/chains-aptos' gen",
